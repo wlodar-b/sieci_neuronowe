@@ -20,11 +20,12 @@
 ```text
 sieci-neuronowe-projekt/
 ├── data/
-│   ├── tabular/          # Plik .csv do Zadania na 4
+│   ├── tabular/
+│   │   └── healthcare-dataset-stroke-data.csv
 │   └── images/           # Katalog ze zdjęciami do Zadania na 5 (dodany do .gitignore)
 ├── notebooks/
-│   ├── 01_zadanie_na_4_tabela.ipynb
-│   └── 02_zadanie_na_5_obrazy.ipynb
+│   ├── 01_stroke_prediction_mlp.ipynb
+│   └── 02_image_classification_cnn.ipynb
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -45,24 +46,33 @@ Pierwsza część projektu polega na rozwiązaniu problemu klasyfikacji na danyc
 * **„w grupach góra-cy / ale przesyła jedna osoba (wszystkie nazwiska w sprawozdaniu)”** – projekt można realizować maksymalnie w 2 osoby (lub samodzielnie); w przypadku pracy w parze komplet plików wysyła na platformę tylko jedna osoba, ale dokumentacja musi zawierać dane wszystkich autorów.
 
 ### Specyfikacja zbioru danych (Zadanie na 4)
-* **Wybrany zbiór danych:** `[DO UZUPEŁNIENIA – np. Telco Customer Churn / Heart Disease z Kaggle]`
-* **Źródło danych:** `[DO UZUPEŁNIENIA – link do zbioru]`
-* **Zmienna docelowa (target):** `[DO UZUPEŁNIENIA – opis przewidywanej klasy]`
+* **Wybrany zbiór danych:** Stroke Prediction Dataset (`data/tabular/healthcare-dataset-stroke-data.csv`)
+* **Źródło danych:** Kaggle Datasets (5110 rekordów, 12 kolumn)
+* **Zmienna docelowa (target):** `stroke` – zmienna binarna określająca, czy pacjent przeszedł udar mózgu (`1` – tak, `0` – nie).
+* **Opis cech wejściowych:**
+  * *Cechy numeryczne:* `age` (wiek), `avg_glucose_level` (średni poziom glukozy we krwi), `bmi` (wskaźnik masy ciała).
+  * *Cechy binarne:* `hypertension` (nadciśnienie tętnicze: 0/1), `heart_disease` (choroby serca: 0/1).
+  * *Cechy kategoryczne (tekstowe):* `gender` (płeć), `ever_married` (stan cywilny), `work_type` (rodzaj zatrudnienia), `Residence_type` (miejsce zamieszkania: miasto/wieś), `smoking_status` (status palenia tytoniu).
+  * *Kolumny techniczne:* `id` (unikalny identyfikator pacjenta – do usunięcia przed trenowaniem modeli).
+* **Zidentyfikowane wyzwania w danych (do uwzględnienia w analizie i sprawozdaniu):**
+  * Braki danych (`N/A`) w kolumnie `bmi` – wymagają uzupełnienia (np. medianą) lub odpowiedniej imputacji.
+  * Kategoria `Unknown` w kolumnie `smoking_status`.
+  * Silne niezbalansowanie klas w zmiennej `stroke` (ok. 5% przypadków pozytywnych vs 95% negatywnych) – wymaga zastosowania podziału stratyfikowanego (`stratify`), wag klas (`class_weight='balanced'`) oraz oceny modeli za pomocą metryk *Precision*, *Recall* i *F1-score*, a nie samego *Accuracy*.
 
 ### Checklista zadań (Zadanie na 4)
 - [ ] **Statystyczna analiza danych (EDA):**
   - [ ] Sprawdzenie wymiarów zbioru (liczba wierszy i kolumn), typów zmiennych oraz duplikatów.
-  - [ ] Identyfikacja brakujących wartości (`NaN`) oraz wartości odstających (*outliers*).
+  - [ ] Identyfikacja brakujących wartości (`N/A` w `bmi`) oraz wartości odstających (*outliers*).
   - [ ] Wyznaczenie podstawowych statystyk opisowych (średnia, mediana, odchylenie standardowe, kwartyle).
   - [ ] Wizualizacja rozkładu klas (sprawdzenie zbalansowania zbioru), histogramy cech oraz macierz korelacji (*heatmap*).
 - [ ] **Przygotowanie danych (Preprocessing):**
-  - [ ] Usunięcie kolumn nieinformacyjnych (np. identyfikatorów) oraz uzupełnienie ewentualnych braków danych.
-  - [ ] Kodowanie zmiennych kategorycznych na postać numeryczną (*One-Hot Encoding*).
+  - [ ] Usunięcie kolumny `id` oraz uzupełnienie braków w kolumnie `bmi` medianą.
+  - [ ] Kodowanie zmiennych kategorycznych (`gender`, `ever_married`, `work_type`, `Residence_type`, `smoking_status`) na postać numeryczną (*One-Hot Encoding*).
   - [ ] Podział zbioru na część treningową (80%) i testową (20%) z zachowaniem proporcji klas (`stratify`).
   - [ ] Standaryzacja cech numerycznych (`StandardScaler`) dopasowana wyłącznie do zbioru treningowego.
 - [ ] **Budowa i trening płytkiej sieci neuronowej (MLP):**
-  - [ ] Zaprojektowanie architektury w Keras (warstwa wejściowa, 1–2 warstwy ukryte z funkcją aktywacji `ReLU`, warstwa wyjściowa z funkcją `Sigmoid` lub `Softmax`).
-  - [ ] Trening modelu (optymalizator `Adam`) z wydzieleniem zbioru walidacyjnego oraz zapisaniem historii uczenia (wykresy *Loss* i *Accuracy*).
+  - [ ] Zaprojektowanie architektury w Keras (warstwa wejściowa, 1–2 warstwy ukryte z funkcją aktywacji `ReLU`, warstwa wyjściowa z funkcją `Sigmoid`).
+  - [ ] Trening modelu (optymalizator `Adam`, uwzględnienie niezbalansowania klas) z wydzieleniem zbioru walidacyjnego oraz zapisaniem historii uczenia (wykresy *Loss* i *Accuracy*).
 - [ ] **Modele porównawcze i ewaluacja:**
   - [ ] Wytrenowanie na tych samych danych **drzewa decyzyjnego** (`DecisionTreeClassifier`) oraz **naiwnego klasyfikatora Bayesa** (`GaussianNB`).
   - [ ] Zestawienie wszystkich trzech modeli według metryk: *Accuracy*, *Precision*, *Recall* oraz *F1-score*.
@@ -108,8 +118,8 @@ Druga część projektu rozszerza zakres prac o przetwarzanie obrazów z wykorzy
 | Etap | Opis zadania | Status |
 | :---: | :--- | :--- |
 | **1** | Wybór narzędzi, środowiska sprzętowego i założenie repozytorium GitHub | ✅ Zakończony |
-| **2** | Wybór i pobranie zbioru tabelarycznego do Zadania na 4 | 🔄 W trakcie |
-| **3** | Analiza statystyczna (EDA), preprocessing i trening modeli (Zadanie na 4) | ⏳ Do zrobienia |
+| **2** | Wybór i pobranie zbioru tabelarycznego do Zadania na 4 (`healthcare-dataset-stroke-data.csv`) | ✅ Zakończony |
+| **3** | Analiza statystyczna (EDA), preprocessing i trening modeli (Zadanie na 4) | 🔄 W trakcie |
 | **4** | Wybór zbioru obrazów i trening sieci CNN na GPU (Zadanie na 5) | ⏳ Do zrobienia |
 | **5** | Opracowanie końcowego sprawozdania/prezentacji z wnioskami i kodem | ⏳ Do zrobienia |
 
