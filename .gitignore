@@ -1,0 +1,34 @@
+Środowiska wirtualne Pythona
+venv/
+.venv/
+env/
+ENV/
+
+Pliki tymczasowe i cache Pythona
+pycache/
+*.py[cod]
+*$py.class
+*.so
+
+Notatniki Jupyter (checkpointy)
+.ipynb_checkpoints/
+
+Duże zbiory danych (zdjęcia do Zadania na 5 oraz archiwa)
+data/images/
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+Zapisane modele (wagi sieci neuronowych potrafią dużo ważyć)
+*.h5
+*.keras
+models/
+
+Ustawienia lokalne edytorów (VS Code, PyCharm)
+.vscode/
+.idea/
+
+Pliki systemowe (Windows / macOS)
+Thumbs.db
+.DS_Store
